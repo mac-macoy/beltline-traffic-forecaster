@@ -10,21 +10,32 @@ from detector_api import DetectorAPI
 
 
 model_path = 'models/faster_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.pb'
+
+# make detector
 human_detector_api = DetectorAPI(path_to_ckpt=model_path)
+
+# confidence threshold to count the detected object as a human
 threshold = 0.7
-cap = cv2.VideoCapture('data/sample.mov')
+
+# read the video
+cap = cv2.VideoCapture(0)
+
 
 while True:
+    # read and resize the video frame for the model
     r, img = cap.read()
-    img = cv2.resize(img, (1280, 720))
+    img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    img = cv2.resize(img, (720, 1280))
+    img = img[650:-50, 0:-1]
 
+    # process the frame
     boxes, scores, classes, num = human_detector_api.process_frame(img)
 
+    # determine the number of humans from the model result
     human_count = len([score for score in scores if score > threshold])
     print('Human count:', human_count)
 
     # Visualization of the results of a detection.
-
     for i in range(len(boxes)):
         # Class 1 represents human
         if classes[i] == 1 and scores[i] > threshold:
