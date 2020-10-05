@@ -18,7 +18,7 @@ human_detector_api = DetectorAPI(path_to_ckpt=model_path)
 threshold = 0.7
 
 # read the video
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 
 while True:

@@ -5,8 +5,10 @@
 
 # This script processes the camera feed and records the human detection results
 
+import os
 import cv2
 import time
+import boto3
 import pandas
 import datetime
 from detector_api import DetectorAPI
@@ -21,7 +23,13 @@ human_detector_api = DetectorAPI(path_to_ckpt=model_path)
 threshold = 0.7
 
 # read the video stream
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
+
+# s3
+s3_bucket = os.environ.get('S3_BUCKET')
+s3_access_key = os.environ.get('S3_ACCESS_KEY')
+s3_secret_key = os.environ.get('S3_SECRET_KEY')
+s3 = boto3.client('s3', aws_access_key_id=s3_access_key, aws_secret_access_key=s3_secret_key)
 
 
 def get_human_count():
@@ -39,6 +47,17 @@ def get_human_count():
     return human_count
 
 
+def write_data_to_s3(df):
+    # write the human count data to S3
+    s3_key = datetime.datetime.now().strftime('%Y_%m_%d__%H') + '.csv'
+    s3.put_object(
+        Body=df.to_csv(sep=",", index=False, header=True),
+        Bucket=s3_bucket,
+        Key=s3_key
+    )
+    print(f'Wrote data to s3://{s3_bucket}/{s3_key}')
+
+
 # array to hold the traffic data
 traffic_data = []
 traffic_data_schema = ['human_count', 'timestamp']
@@ -54,11 +73,10 @@ while True:
 
     # write the data to a csv file if an hour has passed
     if time.time() - last_written > 60*60:
-        df = pandas.DataFrame(traffic_data, columns=traffic_data_schema)
-        csv_file_path = datetime.datetime.now().strftime('%Y_%m_%d__%H') + '.csv'
-        df.to_csv(f'traffic_data/{csv_file_path}', index=False)
+        traffic_data_df = pandas.DataFrame(traffic_data, columns=traffic_data_schema)
+        write_data_to_s3(traffic_data_df)
         last_written = time.time()
         traffic_data = []
 
-    # we only want a record about every 10 seconds
-    time.sleep(9)
+    # we only want a record about every 30 seconds
+    time.sleep(29)
