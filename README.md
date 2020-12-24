@@ -7,6 +7,6 @@ Strategy:
 2. Gather any other possibly useful data (weather, etc.)
 3. Train a model to predict traffic levels at a given time
 
-Data Collection: See [detect_traffic.py](https://github.com/mac-macoy/beltline-traffic-forecaster/blob/master/detect_traffic.py)
+Data Collection: See [detect_traffic.py](https://github.com/mac-macoy/beltline-traffic-forecaster/blob/master/detect_traffic.py) ([demo video](https://github.com/mac-macoy/beltline-traffic-forecaster/blob/master/detect_traffic.mov))
 
 Prediction: See [predict_traffic.ipynb](https://github.com/mac-macoy/beltline-traffic-forecaster/blob/master/predict_traffic.ipynb)
