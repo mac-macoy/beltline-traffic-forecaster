@@ -3,7 +3,7 @@ astor==0.8.1
 astral==2.2
 astunparse==1.6.3
 cachetools==4.1.1
-certifi==2020.6.20
+certifi==2022.12.7
 chardet==3.0.4
 cycler==0.10.0
 gast==0.2.2
